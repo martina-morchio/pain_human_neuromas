@@ -39,7 +39,7 @@ saveRDS(n2, "n2_scDblFinder.rds")
 ########### Filtering ###########
 # Load Seurat object with scDblFinder results
 doublet_file <- "/mnt/parscratch/users/mdq19mm/nucseq/combined_runs/doublet_finder/n2_scDblFinder.rds"
-working_directory <- "/mnt/parscratch/users/mdq19mm/nucseq/combined_runs/integration/old_analysis/"
+working_directory <- "/mnt/parscratch/users/mdq19mm/nucseq/combined_runs/integration/"
 setwd(working_directory)
 images <- "n2"
 
