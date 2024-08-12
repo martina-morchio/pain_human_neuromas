@@ -13,7 +13,7 @@ options(Seurat.object.assay.version = "v5")
 
 # making images for visualisation of snRNAseq data
 # load annotated R object
-nerves.comb <- readRDS("/Volumes/shared/User/snRNAseq/combined_runs/nerves_annotated.rds")
+nerves.comb <- readRDS("/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/nerves_annotated.rds")
 working_directory <- "/Users/martina/Documents/PhD/PAPER/images/nucseq/R"
 setwd(working_directory)
 
@@ -78,7 +78,7 @@ for (i in 1:length(nerves.comb.markers.clusters)) {
 }
 
 #### Schwann cells #####
-schwann <- readRDS("/Volumes/shared/User/snRNAseq/combined_runs/schwann.rds")
+schwann <- readRDS("/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/schwann.rds")
 working_directory <- "schwann/"
 DefaultAssay(schwann)<- "RNA"
 schwann<- NormalizeData(schwann)
@@ -130,7 +130,7 @@ for (i in 1:length(violin)) {
 ggsave("schwann_genes_violin.pdf", p=violin, path = working_directory, width = 5, height = 30, limitsize = FALSE)
 
 #### Fibroblasts ####
-fibro <- readRDS("/Volumes/shared/User/snRNAseq/combined_runs/fibro.rds")
+fibro <- readRDS("/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/fibro.rds")
 working_directory <- "fibro/"
 DefaultAssay(fibro)<- "RNA"
 fibro<- NormalizeData(fibro)
@@ -211,7 +211,7 @@ for (i in 1:length(violin)) {
 ggsave("prrx1_fibro_genes_violin.pdf", p=violin, path = working_directory, width = 10, height = 6, limitsize = FALSE)
 
 #### Immune ####
-immune <- readRDS("/Volumes/shared/User/snRNAseq/combined_runs/immune.rds")
+immune <- readRDS("/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/immune.rds")
 working_directory <- "immune/"
 DefaultAssay(immune)<- "RNA"
 immune<- NormalizeData(immune)
@@ -271,7 +271,7 @@ for (i in 1:length(violin)) {
 ggsave("macrophages_genes_violin.pdf", p=violin, path = working_directory, width = 3, height = 10, limitsize = FALSE)
 
 #### Vascular ####
-vascular <- readRDS("/Volumes/shared/User/snRNAseq/combined_runs/vascular.rds")
+vascular <- readRDS("/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/vascular.rds")
 working_directory <- "vascular/"
 DefaultAssay(schwann)<- "RNA"
 vascular<- NormalizeData(vascular)
@@ -318,11 +318,11 @@ ggsave("vascular_genes_violin.pdf", p=violin, path = working_directory, width = 
 #### supplementary ####
 neuroma.spec <- subset(nerves.comb, idents = c("SGC_1","SGC_2","SGC_3","SGC_4","Myo"))
 nerves.spec <- subset(nerves.comb, idents = c("Astro", "Oligo", "MenF_1", "MenF_2"))
-saveRDS(neuroma.spec, "/Volumes/shared/User/snRNAseq/combined_runs/neuroma.spec.rds")
-saveRDS(nerves.spec, "/Volumes/shared/User/snRNAseq/combined_runs/nerves.spec.rds")
+saveRDS(neuroma.spec, "/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/neuroma.spec.rds")
+saveRDS(nerves.spec, "/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/nerves.spec.rds")
 
 #### neuromas specific clusters ####
-neuroma.spec <- readRDS("/Volumes/shared/User/snRNAseq/combined_runs/neuroma.spec.rds")
+neuroma.spec <- readRDS("/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/neuroma.spec.rds")
 working_directory <- "other/"
 DefaultAssay(neuroma.spec)<- "RNA"
 neuroma.spec<- NormalizeData(neuroma.spec)
@@ -357,7 +357,7 @@ for (i in 1:length(violin)) {
 ggsave("neuroma.spec_genes_violin.pdf", p=violin, path = working_directory, width = 5, height = length(neuroma.spec_genes)*3, limitsize = FALSE)
 
 #### nerves specific clusters ####
-nerves.spec <- readRDS("/Volumes/shared/User/snRNAseq/combined_runs/nerves.spec.rds")
+nerves.spec <- readRDS("/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/nerves.spec.rds")
 working_directory <- "other/"
 DefaultAssay(nerves.spec)<- "RNA"
 nerves.spec<- NormalizeData(nerves.spec)
