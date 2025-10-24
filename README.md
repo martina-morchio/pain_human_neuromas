@@ -25,7 +25,7 @@ This repository contains analysis code for the study above.
 - [02_doubletfinder_and_filtering.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/02_doubletfinder_and_filtering.R): Filtering of low quality nuclei and doublets
 - [03_snRNAseq_integration_rpca.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/03_snRNAseq_integration_rpca.R): Workflow for integration of neuromas and trigeminal nerve roots nuclei using the rpca method
 - [04_finding_markers.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/04_finding_markers.R): Calculation of differentially expressed genes in each cluster and validation of the expression of known marker genes in the expected cell types
-- [05_images_snRNAseq.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/05_images_snRNAseq.R): snRNAseq data visualisation (figure 1)
+- [05_annotation_snRNAseq.R](https://github.com/martina-morchio/pain_human_neuromas/blob/main/scripts/05a_annotation_vascular.R) (a-f): snRNAseq data annotation and visualisation (figure 1)
 - [06_sc_preprocessing_giotto.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/06_sc_preprocessing_giotto.R): Code to process snRNAseq data for cell-type deconvolution with PAGE in the Giotto workflow
 - [07_visium_sections_integration.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/07_visium_sections_integration.R): Integration of Visium sections using the standard Giotto workflow (figure 3)
 - [08_sce_object_from_giotto.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/08_sce_object_from_giotto.R): Code to obtain a SingleCellExperiment object from a Giotto object for downstream data analysis
@@ -35,6 +35,9 @@ This repository contains analysis code for the study above.
 - [12_deseq2_analysis_spatial.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/12_deseq2_analysis_spatial.R): Differential gene expression analysis of barcodes in nerve fascicles from painful and non-painful samples with DEseq2 (figure 4)
 - [13_cellchat_objects_computation.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/13_cellchat_objects_computation.R): Computation of cellchat objects and inference of communication network in painful and non-painful samples with cellchat v2
 - [14_cellchat_images.R](https://github.com/martina-boop/pain_human_neuromas/blob/main/scripts/14_cellchat_images.R): Visualisation of cell-cell communication with cellchat v2 (figure 5)
+- [15_make_spatial_object.R](https://github.com/martina-morchio/pain_human_neuromas/blob/main/scripts/15_make%20spatial_object.R): Annotated spatial dataset as Seurat object (for Zenodo upload)
+- [16_shinyapp_spatial.R](https://github.com/martina-morchio/pain_human_neuromas/blob/main/scripts/16_shinyapp_spatial.R): Code to make shiny app with ShinyCell2
+
 
 ## Data availability
 Data will be available upon article acceptance.
@@ -46,4 +49,5 @@ Data will be available upon article acceptance.
 - [Differential cluster abundance analysis](https://bioconductor.org/books/3.13/OSCA.multisample/differential-abundance.html)
 - [EdgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)
 - [CellChat v2](https://github.com/jinworks/CellChat)
+- [ShinyCell2](https://github.com/the-ouyang-lab/ShinyCell2)
 
