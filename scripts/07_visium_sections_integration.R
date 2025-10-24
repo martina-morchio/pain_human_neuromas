@@ -15,6 +15,7 @@
 library(Giotto)
 library(ggplot2)
 library(scran)
+library(here)
 library(harmony)
 library(cowplot)
 library(dplyr)
@@ -25,8 +26,8 @@ library(stringr)
 ## Start Giotto environment
 # create instructions for your python path, how to view your plots and
 # parameters to save your plot if wanted
-my_python_path = "/users/mdq19mm/.local/share/r-miniconda/envs/giotto_env/bin/python" # set to NULL to use previously installed giotto environment
-results_folder = '/mnt/parscratch/users/mdq19mm/giotto/results/integration_test'
+my_python_path = "C:/Users/mmorchio/AppData/Local/r-miniconda/envs/giotto_env/python.exe" # set to NULL to use previously installed giotto environment
+results_folder = here('outs', 'reanalysis', 'giotto')
 instrs = createGiottoInstructions(python_path = my_python_path,
                                   show_plot = FALSE,
                                   return_plot = TRUE,
@@ -39,9 +40,10 @@ instrs = createGiottoInstructions(python_path = my_python_path,
 
 ## Create Giotto objects with expression data, location data and instructions
 # List of paths 
-filedir <- "/mnt/parscratch/users/mdq19mm/visium_data" # directory with subdirectory for each sample
-sample.ids<- list.dirs(filedir,full.names = FALSE, recursive = FALSE) # get list of sample ids from directory names
-sample.ids<- sample.ids[-c(1,4,5,9,22)] # removing LN1_C1
+filedir <- "D:/visium" # directory with subdirectory for each sample
+folders<- list.dirs(filedir,full.names = FALSE, recursive = FALSE) # get list of sample ids from directory names
+sample.ids <- grep("^LN", folders, value = TRUE)
+sample.ids<- sample.ids[-c(4)] # removing LN1_C1
 sample.paths<- paste(filedir,sample.ids,"outs", sep="/") # get path to each sample's data
 
 samples.images <- c("LN2_C1","LN7_D1","LN8_D1","LN1_A1","LN12_B1","LN15_D1") # Representative sections from each sample to display
@@ -182,7 +184,7 @@ write.csv(scran_markers_subclusters, file = paste0(results_folder,"/scran_marker
 
 ####### PAGE enrichment ########
 ### load giotto object with sc data from 06_sc_preprocessing_giotto.R
-neuromas = loadGiotto(path_to_folder = "/mnt/parscratch/users/mdq19mm/giotto/combined_runs/objects/nerves_sc")
+neuromas = loadGiotto(path_to_folder = here('outs', 'reanalysis', 'giotto', 'snRNAseq_ref', 'giotto_object'))
 
 # Create PAGE matrix
 # PAGE matrix should be a binary matrix with each row represent a gene marker and each column represent a cell type
@@ -190,10 +192,10 @@ neuromas = loadGiotto(path_to_folder = "/mnt/parscratch/users/mdq19mm/giotto/com
 markers_scran = findMarkers_one_vs_all(gobject=neuromas,
                                        method="scran",
                                        expression_values="normalized",
-                                       cluster_column='annotation',
+                                       cluster_column='new_clustering',
                                        min_feats=3)
 
-top_markers <- markers_scran[, head(.SD, 10), by="cluster"]
+top_markers <- markers_scran %>% filter(logFC > 1) %>% group_by(cluster) %>% arrange(desc(logFC)) %>% slice_head(n=50)
 celltypes<-levels(factor(markers_scran$cluster))
 sign_list<-list()
 
@@ -206,7 +208,7 @@ sc_expression_norm = getExpression(neuromas,
                                    values = "normalized",
                                    output = "matrix")
 
-annotation_feats = pDataDT(neuromas)$annotation
+annotation_feats = pDataDT(neuromas)$new_clustering
 
 ######## PAGE Enrichment #######
 PAGE_matrix = makeSignMatrixPAGE(sign_names = celltypes,
@@ -219,7 +221,7 @@ testcombo = runPAGEEnrich(gobject = testcombo,
 cell_types_subset = colnames(PAGE_matrix)
 
 # Plot PAGE enrichment result
-testcombo@instructions$save_dir <- "/mnt/parscratch/users/mdq19mm/giotto/combined_runs/PAGE_enrichment/"
+testcombo@instructions$save_dir <- here('outs','reanalysis', 'giotto','PAGE_enrichment')
 samples.images <- c("LN2_C1","LN7_D1","LN8_D1","LN1_A1","LN12_B1","LN15_D1") # Representative sections from each sample to display
 
 #subset object
@@ -233,30 +235,91 @@ for (i in 1:length(samples.images)){
   spatCellPlot2D(gobject = subset, 
                  spat_enr_names = 'PAGE',
                  point_shape='no_border',point_size=1, 
-                 cell_annotation_values = cell_types_subset[1:17], cow_n_col = 2, coord_fix_ratio = 1,
-                 save_param = list(save_name = paste0("PAGE_plot_",samples.images[i]), base_width=10, base_height=45, limitsize=FALSE))
+                 cell_annotation_values = cell_types_subset[1:25], cow_n_col = 3, coord_fix_ratio = 1,
+                 save_param = list(save_name = paste0("PAGE_plot_",samples.images[i]), base_width=15, base_height=45, limitsize=FALSE))
   
 }
 
+# figure 3 I and J
+samples.images <- c("LN2_C1", "LN15_D1")
+cell_types <- c('damage_mSC', 'Infl_Endo', 'Macro', 'Lympho')
+
+for (i in 1:length(samples.images)){
+  spat_locs <- spatial_locs %>% filter(str_starts(cell_ID, samples.images[i]))
+  subset <- subsetGiottoLocs(testcombo, 
+                             x_max = max(spat_locs$sdimx), x_min = min(spat_locs$sdimx),
+                             y_max = max(spat_locs$sdimy), y_min = min(spat_locs$sdimy))
+  
+  spatCellPlot2D(gobject = subset, 
+                 spat_enr_names = 'PAGE',
+                 point_shape = 'no_border',
+                 point_size = 1, 
+                 cell_annotation_values = cell_types, 
+                 cow_n_col = 1, 
+                 coord_fix_ratio = 1, 
+                 show_grid = FALSE, 
+                 theme_param = list(
+                   axis.title = element_blank(),
+                   axis.text = element_blank(),
+                   axis.text.y = element_blank(),
+                   axis.ticks = element_blank(),
+                   axis.line = element_blank(),
+                   panel.grid = element_blank(),
+                   panel.background = element_blank(),  # Add this
+                   panel.border = element_rect(colour = NA, fill = NA),  # Change this
+                   plot.title = element_text(hjust = 0.5, size = 12),
+                   legend.position = "right",
+                   plot.margin = margin(0, 0, 0, 0, "cm")
+                 ),
+                 save_param = list(
+                   save_name = paste0("fig3_PAGE_plot_", samples.images[i]), 
+                   base_width = 9, 
+                   base_height = 17, 
+                   limitsize = FALSE))
+}
+
+# Save object
+saveGiotto(gobject = testcombo,
+           dir = here('outs','reanalysis', 'giotto'),
+           foldername = "spatial_object")
+
 # Reload object
-testcombo = loadGiotto(path_to_folder = "/mnt/parscratch/users/mdq19mm/giotto/results/objects/testcombo",reconnect_giottoImage = TRUE)
+testcombo = loadGiotto(path_to_folder = here('outs','reanalysis', 'giotto', 'spatial_object'), reconnect_giottoImage = TRUE)
 
-# Clusters were annotated as follows from 1 to 17
-cluster_ann<- c("Fibro",
-                "Endo",
-                "SC1",
-                "Myo1",
-                "Peri",
-                "SC2",
-                "Myo2",
-                "SC3",
-                "Myo3",
-                "SC4",
-                "Myo4",
-                "SC5",
-                "Bcells",
-                "SC6",
-                "Macro",
-                "16",
-                "17")
+# convert to seurat
+seu<- giottoToSeuratV4(testcombo)
 
+# add cell type annotation
+cluster_ann<- list('1'="Fibro",
+                   '2'="Endo",
+                   '3'="SC1",
+                   '4'="Myo1",
+                   '5'="Peri",
+                   '6'="SC2",
+                   '7'="Myo2",
+                   '8'="SC3",
+                   '9'="Myo3",
+                   '10'="SC4",
+                   '11'="Myo4",
+                   '12'="SC5",
+                   '13'="Bcells",
+                   '14'="SC6",
+                   '15'="Macro",
+                   '16'='NA',
+                   "17"='NA')
+
+meta<- seu@meta.data
+meta<- meta %>% mutate(cell_type = recode(rna_leiden_harmony, !!!cluster_ann))
+
+# clean up metadata
+meta <- meta %>% select(-c(rna_in_tissue, rna_array_col, rna_array_row, sdimx, sdimy, cell_ID))
+
+# update metadata
+seu@meta.data <- new.meta
+
+# remove cluster 16 and 17
+Idents(seu) <- 'cell_type'
+seu <- subset(seu, idents = 'NA', invert = TRUE)
+
+# save
+qsave(seu, here('outs', 'spatial', 'giotto_as_seurat.qs'))

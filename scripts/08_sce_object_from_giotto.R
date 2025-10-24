@@ -47,6 +47,6 @@ write.csv(meta, "/mnt/parscratch/users/mdq19mm/giotto/results/metadata_giotto_ha
 
 # creating sce object with normalised data
 sce_norm <- SingleCellExperiment(list(counts=counts_normalised),
-                            colData=meta)
+                                 colData=meta)
 
 saveRDS(sce_norm, "/mnt/parscratch/users/mdq19mm/giotto/results/giotto_integrated_visium_sce_norm.rds")

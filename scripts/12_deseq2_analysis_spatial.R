@@ -111,9 +111,13 @@ library(forcats)
 
 # validate DE genes in snRNAseq data
 # use neuroma subset, generated in 03_snRNAseq_integration_rpca.R
-images<- "./images/single_cell"
-neuromas_sc<- readRDS("/Volumes/shared/boissonade/User/mdq19mm/snRNAseq/combined_runs/neuromas.rds")
+images<- here('outs','reanalysis', 'paper_figures')
+neuromas_sc<- qread(here('outs', 'reanalysis','all','nerves.comb.qs'))
+neuromas_sc<- subset(neuromas_sc, subset = type == "neuroma")
 DefaultAssay(neuromas_sc) <-"RNA"
+
+# get genes
+res_tbl <- fread(here('data', 'P_vs_NP_signif_genes_.csv'))
 
 ## Use aggregated expression from each cluster
 genes<- res_tbl %>% filter(padj<0.01, abs(log2FoldChange)>1.3) %>% arrange(desc(log2FoldChange)) %>% select(gene,log2FoldChange,padj)
@@ -131,19 +135,24 @@ ggplot(df, aes(color=sample)) + geom_point(aes(x=fct_inorder(gene), y=aggregated
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   ggtitle("Aggregated expression of genes upregulated un painful neuromas in the snRNAseq dataset")
-  
+
 ggsave("aggr_expression_sc_deg.pdf",path=images,width=5,height=4)
 
 ## Dotplots
 genes_oi <- aggr_log2fc # Filtering genes of interest to validate
-Idents(neuromas_sc) <- "annotation"
+Idents(neuromas_sc) <- "new_clustering"
+order<- c("mSC_1","mSC_2", "nmSC", "damage_mSC", "damage_nmSC", "Astro", "Oligo", 'EndoF', 'PeriF_1', 
+          'PeriF_2', 'PFF', 'MenF_1', 'MenF_2', "Endo", "Infl_Endo","Lymph_Endo","SMC","Pericytes",
+          "Macro", "Lympho", "SGC_1", "SGC_2", "SGC_3", "SGC_4", "Myo")
+levels(neuromas_sc)<- order
+
 
 genes_oi <- genes %>% filter(padj<0.01)
-neuromas_df<- subset(neuromas_sc,idents=c("MenF_1","MenF_2","Astro","Endo_4","Oligo","Myo_1","Myo_2","SGC_1","SGC_2","SGC_3"), invert=TRUE)
+neuromas_df<- subset(neuromas_sc,idents=c("Myo","SGC_1","SGC_2","SGC_3","SGC_4"), invert=TRUE)
 
 p1<-DotPlot(neuromas_df, features = c(genes_oi$gene), dot.scale = 8) +
-  RotatedAxis() + theme(axis.text.y = element_text(size=15),axis.text.x = element_text(size=15))
-ggsave("genes_oi_dotplot.pdf",p=p1,path = "./images/single_cell", width = 6, height = 5, limitsize = FALSE)
+  RotatedAxis() + theme(axis.text.y = element_text(size=15),axis.text.x = element_text(size=15, face = "italic"), axis.title = element_blank())
+ggsave("genes_oi_dotplot.pdf",p=p1,path = images, width = 7, height = 5, limitsize = FALSE)
 
 ##################### Images from spatial data ##################### 
 filedir <- "/Users/martina/Documents/PhD/Main_projects/Visium/all_data/"
@@ -180,4 +189,3 @@ for (i in 11:length(genes_oi_2)) {
   
   ggsave(paste0(genes_oi_2[i],"_transparent_spatial_plot.pdf"), p=plot, path =images, width = 20, height = 5, limitsize = FALSE)
 }
-
