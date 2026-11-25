@@ -40,7 +40,7 @@ This repository contains analysis code for the study above.
 
 
 ## Data availability
-Data will be available upon article acceptance.
+Processed data is available on Zenodo: https://zenodo.org/records/20763751
 
 ## Related Packages
 - [Seurat](https://satijalab.org/seurat/)
